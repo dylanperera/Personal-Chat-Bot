@@ -1,13 +1,14 @@
 import requests
-from dotenv import load_dotenv
 import os
 
-class PushoverService():
+from tools.BaseService import BaseService
+
+class PushoverService(BaseService):
     def __init__(self) -> None:
-        load_dotenv()
-        self.token = os.getenv("PUSHOVER_TOKEN")
-        self.user = os.getenv("PUSHOVER_USER")
-        self.url = "https://api.pushover.net/1/messages.json"
+        super().__init__("https://api.pushover.net/1/messages.json", "PUSHOVER_TOKEN", "PUSHOVER_USER")
+
+        self.tool_decorator("description", self.record_contact_requested)
+        self.tool_decorator("description2", self.record_unknown_response)
 
     # Function to send message
     def record_message(self, message):
@@ -34,3 +35,24 @@ class PushoverService():
     def record_unknown_response(self, message):
         resp = self.record_message(f"Unable to answer the following question: {message}")
         return resp
+
+if __name__ == "__main__":
+    svc = PushoverService()
+
+    try:
+
+        print("Testing record_contact_requested...")
+        print(
+            svc.record_contact_requested(
+                email="test@example.com",
+                name="Quick Test",
+                notes="Testing inside same file",
+            )
+        )
+
+        print("Testing record_unknown_response...")
+        print(svc.record_unknown_response("Sample unknown question"))
+
+        print("All tests passed.")
+    except Exception as e:
+        print(f"Test failed: {e}")
