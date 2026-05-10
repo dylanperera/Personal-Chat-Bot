@@ -7,8 +7,50 @@ class PushoverService(BaseService):
     def __init__(self) -> None:
         super().__init__("https://api.pushover.net/1/messages.json", "PUSHOVER_TOKEN", "PUSHOVER_USER")
 
-        self.tool_decorator("description", self.record_contact_requested)
-        self.tool_decorator("description2", self.record_unknown_response)
+        record_contact_requested_definition_json = {
+            "type": "function",
+            "name": "record_contact_requested",
+            "description": "Use this function when the user would like to get in contact with me. If they provide an email address to get in contact with, call this tool",
+            "parameters": {
+                "type":"object",
+                "properties": {
+                    "email": {
+                        "type":"string",
+                        "description": "User email address for me to get in contact with"
+                    },
+                    "name":
+                    {
+                        "type": "string",
+                        "description": "Name of the user who would like to get in contact"
+                    },
+                    "notes":
+                    {
+                        "type":"string",
+                        "description": "Any notes the user might have left"
+                    }
+                },
+                "required": ["email"],
+                "additionalProperties": False
+            }
+        }
+
+        record_unknown_response_definition_json = {
+            "type": "function",
+            "name": "record_unknown_response_definition_json",
+            "description": "Use this function when you don't know how to respond to a question or don't know the answer to",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type":"message",
+                        "description": "message the user sent that the agent/model could not answer with the given context"
+                    }
+                }
+            }
+        }
+
+        self.register_tool(record_contact_requested_definition_json, self.record_contact_requested)
+        self.register_tool(record_unknown_response_definition_json, self.record_unknown_response)
 
     # Function to send message
     def record_message(self, message):

@@ -11,7 +11,7 @@ class BaseService(ABC):
         self.user = os.getenv(user)
         self.tools = {}
 
-    def tool_decorator(self, tool_description, func):
+    def register_tool(self, tool_description, func):
         if func.__name__ not in self.tools:
             self.tools[func.__name__] = {"function": func, "description": tool_description}
 
