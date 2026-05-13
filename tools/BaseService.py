@@ -15,5 +15,10 @@ class BaseService(ABC):
         if func.__name__ not in self.tools:
             self.tools[func.__name__] = {"function": func, "description": tool_description}
 
+    def get_tools_description(self):
+        tool_descriptions = []
+        for tool in self.tools.values():
+            tool_descriptions.append(tool["description"])
 
+        return tool_descriptions
     

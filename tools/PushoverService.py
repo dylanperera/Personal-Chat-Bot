@@ -42,7 +42,7 @@ class PushoverService(BaseService):
                 "type": "object",
                 "properties": {
                     "message": {
-                        "type":"message",
+                        "type":"string",
                         "description": "message the user sent that the agent/model could not answer with the given context"
                     }
                 }
