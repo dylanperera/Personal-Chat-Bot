@@ -36,7 +36,7 @@ class PushoverService(BaseService):
 
         record_unknown_response_definition_json = {
             "type": "function",
-            "name": "record_unknown_response_definition_json",
+            "name": "record_unknown_response",
             "description": "Use this function when you don't know how to respond to a question or don't know the answer to",
             "parameters": {
                 "type": "object",

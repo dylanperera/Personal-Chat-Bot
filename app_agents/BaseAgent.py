@@ -3,8 +3,9 @@ from llm_interfaces.BaseLLMInterface import BaseLLMInterface
 
 class BaseAgent(ABC):
 
-    def __init__(self, llm_interface: BaseLLMInterface) -> None:
+    def __init__(self, llm_interface: BaseLLMInterface, tools: []) -> None:
         self.llm_interface = llm_interface
+        self.tools = tools
 
     # Function for agent to handle tool calls
     @abstractmethod

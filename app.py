@@ -16,9 +16,9 @@ if __name__ == "__main__":
     context_info = ContextInformation(name="Dylan Perera", summary=summary, linkedin=linkedin_profile, resume=resume)
 
 
-    agent = ChatAgent(tools=svc.get_tools_description(), context_info=context_info)
+    agent = ChatAgent(tools=svc.tools, tool_descriptions=svc.get_tools_description(), context_info=context_info)
 
-    agent.agent_callback(message="Whats your biggest achievement?", history=[])
+    agent.agent_callback(message="what is your brothers name?", history=[])
 
    
 

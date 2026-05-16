@@ -1,16 +1,17 @@
-from multiprocessing import context
+from openai.types.responses import Response, ResponseFunctionToolCall, ResponseOutputItem
 from app_agents.BaseAgent import BaseAgent
 from data_types.context_info import ContextInformation
 from llm_interfaces.OpenAIInterface import OpenAIInterface
+import json
 
 
 class ChatAgent(BaseAgent):
     
-    def __init__(self, tools: [], context_info: ContextInformation) -> None:
+    def __init__(self, tools: [], tool_descriptions: [], context_info: ContextInformation) -> None:
 
-        open_ai = OpenAIInterface(model="gpt-5.4-mini", tools=tools)
+        open_ai = OpenAIInterface(model="gpt-4o-mini", tool_descriptions=tool_descriptions)
 
-        super().__init__(llm_interface=open_ai)
+        super().__init__(llm_interface=open_ai, tools=tools)
 
         self.system_prompt =f"""
         # Identity:\
@@ -26,7 +27,6 @@ class ChatAgent(BaseAgent):
             Only respond to questions about me.\
             If the user is engaging in discussion, try to steer them towards getting in touch via email; ask for their email and if they'd like their name and any notes, then record it using your record_contact_requested tool.\
             If the user asks a question and you don't know the response to it, use your record_unknown_response tool to record the message the user had sent, even if it's about something trivial or unrelated to career.\
-            With the context below, please chat with the user, always staying in character as {context_info.name}.
 
         # Context:
             ## Summary:\
@@ -35,22 +35,44 @@ class ChatAgent(BaseAgent):
             {context_info.linkedin}\
             ## Resume:\
             {context_info.resume}\n
+
+        With the context and information above, please chat with the user, always staying in character as {context_info.name}.
         """
+
+    def handle_tool_call(self, item:ResponseOutputItem):
+        response: list = []
+
+        try:
+            tool_name = item.name
+            tool_args = json.loads(item.arguments)
+            result = self.tools[tool_name]["function"](**tool_args)
+            response.append({"type": "function_call_output", "output": json.dumps(result), "call_id": item.call_id})
+        except:
+            response.append({"type": "function_call_output", "output": "Tool call failed", "call_id": item.call_id})
+        finally:
+            return response
         
     # Call back function the gradio chat will call
-    def agent_callback(self, message, history):
+    def agent_callback(self, message, history) -> dict:
         messages = [{"role":"system", "content": self.system_prompt}] + history + [{"role":"user", "content":message}]
 
-        # Once we get the message from the user, call the response function to determine if tool is required or not
-        response = self.llm_interface.get_ai_response(messages)
+        not_done = True
 
-        # Determine from the response if a tool call is required
-        # if tool call is required:
-            # make tool call
-        # otherwise 
+        response:dict | None = None
 
-        return response
+        while not_done:
         
+            llm_response: Response = self.llm_interface.get_ai_response(messages)
 
-    def handle_tool_call():
-        pass
+            for item in llm_response.output:
+
+                if item.type == "function_call":
+                    messages += llm_response.output
+                    tool_call_response = self.handle_tool_call(item)
+                    messages.extend(tool_call_response)
+                    
+                elif item.type == "message":
+                    response = {"role":"assistant", "content":item.content[0].text}
+                    not_done = False
+    
+        return response
