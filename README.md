@@ -1,5 +1,6 @@
-Personal Career Chat Bot that can answers questions about me
+# Personal Career Chat Bot that can answers questions about me
 
+Try it out here:
 https://huggingface.co/spaces/DylanPerera1/Personal-Chat-Bot
 
 - Implemented agentic architecture with memory + context + tool components
