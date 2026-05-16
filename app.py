@@ -16,12 +16,11 @@ if __name__ == "__main__":
 
     context_info = ContextInformation(name="Dylan Perera", summary=summary, linkedin=linkedin_profile, resume=resume)
 
+    initial_message = [{"role": "assistant", "content": f"Welcome! 👋 I am a personal chatbot for {context_info.name}. If you have any questions or would like to get in contact feel free to send anything in the messages box below"}]
 
     agent = ChatAgent(tools=svc.tools, tool_descriptions=svc.get_tools_description(), context_info=context_info)
 
-    #print(agent.agent_callback(message="can you tell me about yourself?", history=[]))
 
-   
 
     # Gradio chat - call back will be a function defined by agent
-    gr.ChatInterface(agent.agent_callback, type="messages").launch()
+    gr.ChatInterface(agent.agent_callback, type = "messages", chatbot = gr.Chatbot(value=initial_message, type = "messages")).launch()
