@@ -1,3 +1,4 @@
+from typing import Any
 from openai.types.responses import Response, ResponseFunctionToolCall, ResponseOutputItem
 from app_agents.BaseAgent import BaseAgent
 from data_types.context_info import ContextInformation
@@ -54,7 +55,9 @@ class ChatAgent(BaseAgent):
         
     # Call back function the gradio chat will call
     def agent_callback(self, message, history) -> dict:
-        messages = [{"role":"system", "content": self.system_prompt}] + history + [{"role":"user", "content":message}]
+        history_cleaned = list(map(lambda x: {"role":x["role"], "content":x["content"]}, history))
+
+        messages = [{"role":"system", "content": self.system_prompt}] + history_cleaned + [{"role":"user", "content":message}]
 
         not_done = True
 

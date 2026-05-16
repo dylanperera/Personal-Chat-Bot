@@ -2,6 +2,7 @@ from app_agents.ChatAgent import ChatAgent
 from tools.PushoverService import PushoverService
 from context_extractors.Extractors import extract_data
 from data_types.context_info import ContextInformation
+import gradio as gr
 
 if __name__ == "__main__":
 
@@ -18,8 +19,9 @@ if __name__ == "__main__":
 
     agent = ChatAgent(tools=svc.tools, tool_descriptions=svc.get_tools_description(), context_info=context_info)
 
-    agent.agent_callback(message="what is your brothers name?", history=[])
+    #print(agent.agent_callback(message="can you tell me about yourself?", history=[]))
 
    
 
     # Gradio chat - call back will be a function defined by agent
+    gr.ChatInterface(agent.agent_callback, type="messages").launch()
