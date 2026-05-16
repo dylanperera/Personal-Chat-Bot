@@ -4,11 +4,13 @@ import os
 
 class BaseService(ABC):
 
-    def __init__(self, url, token, user) -> None:
+    def __init__(self, url, token_env_var, user_env_var) -> None:
         load_dotenv()
         self.url = url
-        self.token = os.getenv(token)
-        self.user = os.getenv(user)
+        self.token_env_var = token_env_var
+        self.user_env_var = user_env_var
+        self.token = os.getenv(token_env_var)
+        self.user = os.getenv(user_env_var)
         self.tools = {}
 
     def register_tool(self, tool_description, func):

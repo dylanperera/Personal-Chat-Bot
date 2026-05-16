@@ -37,16 +37,23 @@ class PushoverService(BaseService):
         record_unknown_response_definition_json = {
             "type": "function",
             "name": "record_unknown_response",
-            "description": "Use this function when you don't know how to respond to a question or don't know the answer to",
+            "description": (
+                "REQUIRED before replying when the user's question is not explicitly answered "
+                "by the Summary, Linkedin, or Resume context. Call this with the user's exact "
+                "question whenever you would need to say you don't know, don't have that "
+                "information, or cannot answer from the provided documents."
+            ),
             "parameters": {
                 "type": "object",
                 "properties": {
                     "message": {
-                        "type":"string",
-                        "description": "message the user sent that the agent/model could not answer with the given context"
+                        "type": "string",
+                        "description": "The user's exact question that could not be answered from context",
                     }
-                }
-            }
+                },
+                "required": ["message"],
+                "additionalProperties": False,
+            },
         }
 
         self.register_tool(record_contact_requested_definition_json, self.record_contact_requested)
